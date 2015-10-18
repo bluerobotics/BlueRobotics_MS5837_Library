@@ -2,7 +2,6 @@
 #include <Wire.h>
 
 #define MS5837_ADDR               0x76
-
 #define MS5837_RESET              0x1E
 #define MS5837_ADC_READ           0x00
 #define MS5837_PROM_READ          0xA0
@@ -10,7 +9,7 @@
 #define MS5837_CONVERT_D2_8192    0x5A
 
 MS5837::MS5837() {
-
+	fluidDensity = 1029;
 }
 
 void MS5837::init() {
@@ -41,6 +40,10 @@ void MS5837::init() {
 	} else {
 		// Failure - try again?
 	}
+}
+
+void MS5837::setFluidDensity(float density) {
+	fluidDensity = density;
 }
 
 void MS5837::read() {
@@ -89,7 +92,6 @@ void MS5837::calculate() {
 	// Given C1-C6 and D1, D2, calculated TEMP and P
 	// Do conversion first and then second order temp compensation
 
-	
 }
 
 float MS5837::pressure(float conversion) {
@@ -97,7 +99,15 @@ float MS5837::pressure(float conversion) {
 }
 
 float MS5837::temperature() {
-	return TEMP/
+	return TEMP/100.0f;
+}
+
+float MS5837::depth() {
+	return 0.0f;
+}
+
+float MS5837::altitude() {
+	return 0.0f;
 }
 
 uint8_t MS5837::crc4(uint16_t n_prom[]) {

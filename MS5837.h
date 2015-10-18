@@ -49,6 +49,11 @@ public:
 
 	void init();
 
+	/** Provide the density of the working fluid in kg/m^3. Default is for 
+	 * seawater. Should be 997 for freshwater.
+	 */
+	void setFluidDensity(float density);
+
 	/** The read from I2C takes up for 40 ms, so use sparingly is possible.
 	 */
 	void read();
@@ -59,8 +64,6 @@ public:
 	 */
 	void readTestCase();
 
-	void calculate();
-
 	/** Pressure returned in mbar or mbar*conversion rate.
 	 */
 	float pressure(float conversion = 1.0f);
@@ -69,13 +72,28 @@ public:
 	 */
 	float temperature();
 
+	/** Depth returned in meters (valid for operation in incompressible
+	 *  liquids only. Uses density that is set for fresh or seawater.
+	 */
+	float depth();
+
+	/** Altitude returned in meters (valid for operation in air only).
+	 */
+	float altitude();
+
 private:
 	uint16_t C[8];
 	uint32_t D1, D2;
 	uint32_t TEMP, P;
 
-	uint8_t crc4(uint16_t n_prom[]);
+	float fluidDensity;
 
+	/** Performs calculations per the sensor data sheet for conversion and
+	 *  second order compensation.
+	 */
+	void calculate();
+
+	uint8_t crc4(uint16_t n_prom[]);
 };
 
 #endif
