@@ -1,16 +1,14 @@
-/* Blue Robotics Arduino I2C ESC Control Library
-------------------------------------------------
+/* Blue Robotics Arduino MS5837-30BA Pressure/Temperature Sensor Library
+------------------------------------------------------------
  
-Title: Arduino I2C ESC Library
+Title: Blue Robotics Arduino MS5837-30BA Pressure/Temperature Sensor Library
 
-Description: This library provide methods to control I2C capable ESCs
-using the Blue Robotics fork of the tgy firmware. It's designed for the
-"BlueESC" but will work with an tgy compatible ESC.
+Description: This library provides utilities to communicate with and to
+read data from the Measurement Specialties MS5837-30BA pressure/temperature 
+sensor.
 
-The code is designed for the Arduino boards and can be compiled and 
-uploaded via the Arduino 1.0+ software.
-
-Inspired by: https://github.com/balrog-kun/autopilot/blob/lpc1343/actuators-i2c.h
+Authors: Rustom Jehangir, Blue Robotics Inc.
+         Adam Šimko, Blue Robotics Inc.
 
 -------------------------------
 The MIT License (MIT)
@@ -43,11 +41,40 @@ THE SOFTWARE.
 
 class MS5837 {
 public:
+	static const float Pa = 100.0f;
+	static const float bar = 0.001f;
+	static const float mbar = 1.0f;
+
 	MS5837();
 
 	void init();
 
+	/** The read from I2C takes up for 40 ms, so use sparingly is possible.
+	 */
+	void read();
+
+	/** This function loads the datasheet test case values to verify that
+	 *  calculations are working correctly. No example checksum is provided
+	 *  so the checksum test may fail.
+	 */
+	void readTestCase();
+
+	void calculate();
+
+	/** Pressure returned in mbar or mbar*conversion rate.
+	 */
+	float pressure(float conversion = 1.0f);
+
+	/** Temperature returned in deg C.
+	 */
+	float temperature();
+
 private:
+	uint16_t C[8];
+	uint32_t D1, D2;
+	uint32_t TEMP, P;
+
+	uint8_t crc4(uint16_t n_prom[]);
 
 };
 
