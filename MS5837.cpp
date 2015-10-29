@@ -29,7 +29,9 @@ void MS5837::init() {
 
 		Wire.requestFrom(MS5837_ADDR,2);
 		C[i] = (Wire.read() << 8) | Wire.read();
+		Serial.println(C[i]);
 	}
+	Serial.println("--------");
 
 	// Verify that data is correct with CRC
 	uint8_t crcRead = C[0] >> 12;
