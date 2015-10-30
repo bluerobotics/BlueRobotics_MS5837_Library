@@ -1,7 +1,7 @@
 #include "MS5837.h"
 #include <Wire.h>
 
-#define MS5837_ADDR               0x76  //0XED, 0XEC?
+#define MS5837_ADDR               0x76  
 #define MS5837_RESET              0x1E
 #define MS5837_ADC_READ           0x00
 #define MS5837_PROM_READ          0xA0
@@ -29,9 +29,7 @@ void MS5837::init() {
 
 		Wire.requestFrom(MS5837_ADDR,2);
 		C[i] = (Wire.read() << 8) | Wire.read();
-		Serial.print(C[i]);Serial.print(", ");
 	}
-	Serial.println();
 
 	// Verify that data is correct with CRC
 	uint8_t crcRead = C[0] >> 12;
