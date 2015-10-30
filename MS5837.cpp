@@ -1,7 +1,7 @@
 #include "MS5837.h"
 #include <Wire.h>
 
-#define MS5837_ADDR               0x76
+#define MS5837_ADDR               0x76  //0XED, 0XEC?
 #define MS5837_RESET              0x1E
 #define MS5837_ADC_READ           0x00
 #define MS5837_PROM_READ          0xA0
@@ -29,7 +29,9 @@ void MS5837::init() {
 
 		Wire.requestFrom(MS5837_ADDR,2);
 		C[i] = (Wire.read() << 8) | Wire.read();
+		Serial.print(C[i]);Serial.print(", ");
 	}
+	Serial.println();
 
 	// Verify that data is correct with CRC
 	uint8_t crcRead = C[0] >> 12;
@@ -53,21 +55,35 @@ void MS5837::read() {
 	Wire.endTransmission();
 
 	delay(20); // Max conversion time per datasheet
+	
+	Wire.beginTransmission(MS5837_ADDR);
+	Wire.write(MS5837_ADC_READ);
+	Wire.endTransmission();
 
-	Wire.requestFrom(MS5837_ADDR,3);
+ 	Wire.requestFrom(MS5837_ADDR,3);
 	D1 = 0;
-	D1 = (Wire.read() << 24) | (Wire.read() << 16) | Wire.read();
-
+	D1 = Wire.read();
+	D1 = (D1 << 8) | Wire.read();
+	D1 = (D1 << 8) | Wire.read();
+	
 	// Request D2 conversion
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_CONVERT_D2_8192);
 	Wire.endTransmission();
 
 	delay(20); // Max conversion time per datasheet
+	
+	Wire.beginTransmission(MS5837_ADDR);
+	Wire.write(MS5837_ADC_READ);
+	Wire.endTransmission();
 
-	Wire.requestFrom(MS5837_ADDR,2);
+	Wire.requestFrom(MS5837_ADDR,3);
 	D2 = 0;
-	D2 = (Wire.read() << 24) | (Wire.read() << 16) | Wire.read();
+	D2 = Wire.read();
+	D2 = (D2 << 8) | Wire.read();
+	D2 = (D2 << 8) | Wire.read();
+	
+	Serial.println("----");
 
 	calculate();
 }
@@ -91,11 +107,61 @@ void MS5837::readTestCase() {
 void MS5837::calculate() {
 	// Given C1-C6 and D1, D2, calculated TEMP and P
 	// Do conversion first and then second order temp compensation
-
+	
+	long int dT;
+	int64_t SENS;
+	int64_t OFF;
+	long int SENSi;
+	long int OFFi;
+	long int Ti;
+	int64_t OFF2;
+	int64_t SENS2;
+	long int TEMP2;
+	long int P2;
+		
+	
+	
+	// Terms called
+	dT = D2-uint32_t(C[5])*256l;
+	SENS = int64_t(C[1])*32768l+(int64_t(C[3])*dT)/256l;
+	OFF = int64_t(C[2])*65536l+(int64_t(C[4])*dT)/128l;
+	
+	
+	//Temp and P conversion
+	TEMP = 2000l+(dT*C[6])/8388608l;
+	P = (D1*SENS/(2097152l)-OFF)/(8192l);
+	//P = D1*SENS-OFF;
+	
+	//Second order compensation
+	if((TEMP/100)<20){         //Low temp
+		Ti = (3*int64_t(dT)*int64_t(dT))/8589934592l;
+		OFFi = (3*(TEMP-2000)*(TEMP-2000))/2;
+		SENSi = (5*(TEMP-2000)*(TEMP-2000))/8;
+		if((TEMP/100)<-15){    //Very low temp
+			OFFi = OFFi+7*(TEMP+1500l)*(TEMP+1500l);
+			SENSi = SENSi+4*(TEMP+1500l)*(TEMP+1500l);
+		}
+	}
+	else if((TEMP/100)>=20){    //High temp
+		Ti = 2*(dT*dT)/(137438953472l);
+		OFFi = (1*(TEMP-2000)*(TEMP-2000))/16;
+		SENSi = 0;
+	}
+	
+	
+	Serial.println(uint32_t(OFFi));
+	Serial.println(uint32_t(SENSi));
+	
+	
+	OFF2 = OFF-OFFi;           //Calculate pressure and temp second order
+	SENS2 = SENS-SENSi;
+	
+	TEMP2 = (TEMP-Ti);
+	P2 = (((D1*SENS2)/2097152l-OFF2)/8192l);
 }
 
 float MS5837::pressure(float conversion) {
-	return P/100.0f*conversion;
+	return P/10.0f*conversion;
 }
 
 float MS5837::temperature() {

@@ -84,7 +84,8 @@ public:
 private:
 	uint16_t C[8];
 	uint32_t D1, D2;
-	uint32_t TEMP, P;
+	int32_t TEMP;
+	int32_t P;
 
 	float fluidDensity;
 
