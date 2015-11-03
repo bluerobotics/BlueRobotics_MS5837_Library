@@ -127,7 +127,7 @@ void MS5837::calculate() {
 	
 	//Second order compensation
 	if((TEMP/100)<20){         //Low temp
-		Ti = (3*int64_t(dT)*int64_t(dT))/8589934592l;
+		Ti = (3*int64_t(dT)*int64_t(dT))/(8589934592LL);
 		OFFi = (3*(TEMP-2000)*(TEMP-2000))/2;
 		SENSi = (5*(TEMP-2000)*(TEMP-2000))/8;
 		if((TEMP/100)<-15){    //Very low temp
@@ -136,8 +136,8 @@ void MS5837::calculate() {
 		}
 	}
 	else if((TEMP/100)>=20){    //High temp
-		Ti = 2*(int64_t(dT)*int64_t(dT))/(137438953472l);
-		OFFi = 1*((TEMP-2000)*(TEMP-2000))/16;
+		Ti = 2*(dT*dT)/(137438953472LL);
+		OFFi = (1*(TEMP-2000)*(TEMP-2000))/16;
 		SENSi = 0;
 	}
 	
