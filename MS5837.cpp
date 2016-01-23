@@ -161,8 +161,9 @@ float MS5837::depth() {
 }
 
 float MS5837::altitude() {
-	return 0.0f;
+	return (1-pow((pressure()/1013.25),.190284))*145366.45*.3048;
 }
+
 
 uint8_t MS5837::crc4(uint16_t n_prom[]) {
 	uint16_t n_rem = 0;
