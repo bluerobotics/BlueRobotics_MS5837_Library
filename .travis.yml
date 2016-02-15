@@ -1,12 +1,9 @@
-language: c
-sudo: false
-before_install:
-  - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
-#install:
-#  - arduino --install-library ""
+language: python
+python:
+    - "2.7"
+
+install:
+    - pip install -U platformio
+
 script:
-  - build_main_platforms
-notifications:
-  email:
-    on_success: change
-    on_failure: change
+    - platformio ci --lib="." --board=uno --board=mega
