@@ -47,7 +47,7 @@ float altitude();
 
 # Versions
 
-0.0 - Under development
+1.0.0 - First release, included in Arduino Library Manager
 
 # Reference
 
