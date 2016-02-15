@@ -40,12 +40,15 @@ THE SOFTWARE.
 MS5837 sensor;
 
 void setup() {
-  Serial.begin(57600);
+  
+  Serial.begin(9600);
+  
   Serial.println("Starting");
   
   Wire.begin();
 
   sensor.init();
+  
   sensor.setFluidDensity(997); // kg/m^3 (freshwater, 1029 for seawater)
 }
 
@@ -53,16 +56,21 @@ void loop() {
 
   sensor.read();
 
-  Serial.print("Pressure: "); Serial.print(sensor.pressure()); Serial.print(" mbar");
-  Serial.print("   "); Serial.print(sensor.pressure(MS5837::Pa)); Serial.println(" Pa");
+  Serial.print("Pressure: "); 
+  Serial.print(sensor.pressure()); 
+  Serial.println(" mbar");
   
-  Serial.print("Temperature: "); Serial.print(sensor.temperature()); Serial.println(" deg C");
+  Serial.print("Temperature: "); 
+  Serial.print(sensor.temperature()); 
+  Serial.println(" deg C");
   
-  Serial.print("Depth: "); Serial.print(sensor.depth()); Serial.println(" m");
+  Serial.print("Depth: "); 
+  Serial.print(sensor.depth()); 
+  Serial.println(" m");
   
-  Serial.print("Altitude: "); Serial.print(sensor.altitude()); Serial.println(" m above mean sea level");
-  
-  Serial.println("---");
+  Serial.print("Altitude: "); 
+  Serial.print(sensor.altitude()); 
+  Serial.println(" m above mean sea level");
 
   delay(1000);
 }

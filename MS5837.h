@@ -41,9 +41,9 @@ THE SOFTWARE.
 
 class MS5837 {
 public:
-	const float Pa = 100.0f;
-	const float bar = 0.001f;
-	const float mbar = 1.0f;
+	static constexpr float Pa = 100.0f;
+	static constexpr float bar = 0.001f;
+	static constexpr float mbar = 1.0f;
 
 	MS5837();
 

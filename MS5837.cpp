@@ -106,18 +106,14 @@ void MS5837::calculate() {
 	// Given C1-C6 and D1, D2, calculated TEMP and P
 	// Do conversion first and then second order temp compensation
 	
-	long int dT;
+	int32_t dT;
 	int64_t SENS;
 	int64_t OFF;
-	long int SENSi;
-	long int OFFi;
-	long int Ti;
+	int32_t SENSi; 
+	int32_t OFFi;  
+	int32_t Ti;    
 	int64_t OFF2;
 	int64_t SENS2;
-	long int TEMP2;
-	long int P2;
-		
-	
 	
 	// Terms called
 	dT = D2-uint32_t(C[5])*256l;
@@ -126,9 +122,8 @@ void MS5837::calculate() {
 	
 	
 	//Temp and P conversion
-	TEMP = 2000l+(dT*C[6])/8388608l;
+	TEMP = 2000l+int64_t(dT)*C[6]/8388608LL;
 	P = (D1*SENS/(2097152l)-OFF)/(8192l);
-	//P = D1*SENS-OFF;
 	
 	//Second order compensation
 	if((TEMP/100)<20){         //Low temp
@@ -146,16 +141,11 @@ void MS5837::calculate() {
 		SENSi = 0;
 	}
 	
-	
-	Serial.println(uint32_t(OFFi));
-	Serial.println(uint32_t(SENSi));
-	
-	
 	OFF2 = OFF-OFFi;           //Calculate pressure and temp second order
 	SENS2 = SENS-SENSi;
 	
-	TEMP2 = (TEMP-Ti);
-	P2 = (((D1*SENS2)/2097152l-OFF2)/8192l);
+	TEMP = (TEMP-Ti);
+	P = (((D1*SENS2)/2097152l-OFF2)/8192l);
 }
 
 float MS5837::pressure(float conversion) {
@@ -167,12 +157,13 @@ float MS5837::temperature() {
 }
 
 float MS5837::depth() {
-	return 0.0f;
+	return (pressure(MS5837::Pa)-101300)/(fluidDensity*9.80665);
 }
 
 float MS5837::altitude() {
-	return 0.0f;
+	return (1-pow((pressure()/1013.25),.190284))*145366.45*.3048;
 }
+
 
 uint8_t MS5837::crc4(uint16_t n_prom[]) {
 	uint16_t n_rem = 0;
