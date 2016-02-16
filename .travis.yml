@@ -7,8 +7,7 @@ cache:
         - "~/.platformio"
 
 env:
-    - PLATFORMIO_CI_SRC=examples/MS5837_Calculation_Test/MS5837_Calculation_Test.ino
-    - PLATFORMIO_CI_SRC=examples/MS5837_Example/MS5837_Example.ino
+    - PLATFORMIO_CI_SRC=examples/*/*.ino
 
 install:
     - pip install -U platformio
