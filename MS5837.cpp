@@ -80,8 +80,6 @@ void MS5837::read() {
 	D2 = Wire.read();
 	D2 = (D2 << 8) | Wire.read();
 	D2 = (D2 << 8) | Wire.read();
-	
-	Serial.println("----");
 
 	calculate();
 }
