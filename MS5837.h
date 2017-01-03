@@ -45,9 +45,17 @@ public:
 	static constexpr float bar = 0.001f;
 	static constexpr float mbar = 1.0f;
 
+	static constexpr uint8_t MS5837_30BA = 0;
+	static constexpr uint8_t MS5837_02BA = 1;
+
 	MS5837();
 
 	void init();
+
+	/** Set model of MS5837 sensor. Valid options are MS5837::MS5837_30BA (default)
+	 * and MS5837::MS5837_02BA.
+	 */
+	void setModel(uint8_t model);
 
 	/** Provide the density of the working fluid in kg/m^3. Default is for 
 	 * seawater. Should be 997 for freshwater.
@@ -86,6 +94,7 @@ private:
 	uint32_t D1, D2;
 	int32_t TEMP;
 	int32_t P;
+	uint8_t _model;
 
 	float fluidDensity;
 

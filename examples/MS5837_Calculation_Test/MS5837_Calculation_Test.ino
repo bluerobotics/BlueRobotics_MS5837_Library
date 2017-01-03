@@ -42,6 +42,8 @@ MS5837 sensor;
 
 void setup() {
   Serial.begin(57600);
+
+  sensor.setModel(MS5837::MS5837_30BA);
   
   Wire.begin();
 }
@@ -50,9 +52,9 @@ void loop() {
   sensor.readTestCase();
 
   Serial.print("Pressure: "); Serial.print(sensor.pressure()); Serial.print(" mbar");
-  Serial.print("(Should be 3999.8 mbar before 2nd order corrections)"); Serial.println();
+  Serial.print("(Should be 3999.8 mbar for 30BA and 1100.0 mbar for 02BA before 2nd order corrections)"); Serial.println();
   Serial.print("Temperature: "); Serial.print(sensor.temperature()); Serial.print(" deg C");
-  Serial.print("(Should be 19.81 deg C before 2nd order corrections)"); Serial.println();
+  Serial.print("(Should be 19.81 deg C for 30BA and 20.00 deg C for 02BA before 2nd order corrections)"); Serial.println();
 
   delay(10000);
 }
