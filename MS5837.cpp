@@ -208,7 +208,7 @@ uint8_t MS5837::crc4(uint16_t n_prom[]) {
 
 	for ( uint8_t i = 0 ; i < 16; i++ ) {
 		if ( i%2 == 1 ) {
-			n_rem ^= (uint16_t)((n_prom[i>>1]) & 0x00FF0);
+			n_rem ^= (uint16_t)((n_prom[i>>1]) & 0x00FF);
 		} else {
 			n_rem ^= (uint16_t)(n_prom[i>>1] >> 8);
 		}
