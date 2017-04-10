@@ -11,7 +11,10 @@ Please see the examples for normal operation. Below are the available functions 
 ``` cpp
 MS5837();
 
-void init();
+/** Must be called before attempting to operate the sensor.
+ * Returns true if the sensor was initialized successfully.
+ */
+bool init();
 
 /** Set model of MS5837 sensor. Valid options are MS5837::MS5837_30BA (default)
  * and MS5837::MS5837_02BA.
@@ -26,12 +29,6 @@ void setFluidDensity(float density);
 /** The read from I2C takes up for 40 ms, so use sparingly is possible.
  */
 void read();
-
-/** This function loads the datasheet test case values to verify that
- *  calculations are working correctly. No example checksum is provided
- *  so the checksum test may fail.
- */
-void readTestCase();
 
 /** Pressure returned in mbar or mbar*conversion rate.
  */
