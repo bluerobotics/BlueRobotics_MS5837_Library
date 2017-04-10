@@ -8,6 +8,13 @@
 #define MS5837_CONVERT_D1_8192    0x4A
 #define MS5837_CONVERT_D2_8192    0x5A
 
+const float MS5837::Pa = 100.0f;
+const float MS5837::bar = 0.001f;
+const float MS5837::mbar = 1.0f;
+
+const uint8_t MS5837::MS5837_30BA = 0;
+const uint8_t MS5837::MS5837_02BA = 1;
+
 MS5837::MS5837() {
 	fluidDensity = 1029;
 }

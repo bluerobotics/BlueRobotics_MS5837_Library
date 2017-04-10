@@ -41,12 +41,12 @@ THE SOFTWARE.
 
 class MS5837 {
 public:
-	static constexpr float Pa = 100.0f;
-	static constexpr float bar = 0.001f;
-	static constexpr float mbar = 1.0f;
+	static const float Pa;
+	static const float bar;
+	static const float mbar;
 
-	static constexpr uint8_t MS5837_30BA = 0;
-	static constexpr uint8_t MS5837_02BA = 1;
+	static const uint8_t MS5837_30BA;
+	static const uint8_t MS5837_02BA;
 
 	MS5837();
 
