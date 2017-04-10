@@ -19,7 +19,7 @@ MS5837::MS5837() {
 	fluidDensity = 1029;
 }
 
-void MS5837::init() {
+bool MS5837::init() {
 	// Reset the MS5837, per datasheet
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_RESET);
@@ -43,10 +43,10 @@ void MS5837::init() {
 	uint8_t crcCalculated = crc4(C);
 
 	if ( crcCalculated == crcRead ) {
-		// Success
-	} else {
-		// Failure - try again?
+		return true; // Initialization success
 	}
+
+	return false; // CRC fail
 }
 
 void MS5837::setModel(uint8_t model) {
