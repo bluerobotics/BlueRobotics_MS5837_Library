@@ -29,7 +29,7 @@ bool MS5837::init() {
 	delay(10);
 
 	// Read calibration values and CRC
-	for ( uint8_t i = 0 ; i < 8 ; i++ ) {
+	for ( uint8_t i = 0 ; i < 7 ; i++ ) {
 		Wire.beginTransmission(MS5837_ADDR);
 		Wire.write(MS5837_PROM_READ+i*2);
 		Wire.endTransmission();
