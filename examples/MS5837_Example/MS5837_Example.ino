@@ -47,13 +47,23 @@ void setup() {
   
   Wire.begin();
 
-  sensor.init();
+  // Initialize pressure sensor
+  // Returns true if initialization was successful
+  // We can't continue with the rest of the program unless we can initialize the sensor
+  while (!sensor.init()) {
+    Serial.println("Init failed!");
+    Serial.println("Are SDA/SCL connected correctly?");
+    Serial.println("Blue Robotics Bar30: White=SCL Green=SDA");
+    Serial.println("\n\n\n");
+    delay(5000);
+  }
+  
   sensor.setModel(MS5837::MS5837_30BA);
   sensor.setFluidDensity(997); // kg/m^3 (freshwater, 1029 for seawater)
 }
 
 void loop() {
-
+  // Update pressure and temperature readings
   sensor.read();
 
   Serial.print("Pressure: "); 
