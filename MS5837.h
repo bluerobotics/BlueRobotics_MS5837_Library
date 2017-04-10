@@ -66,12 +66,6 @@ public:
 	 */
 	void read();
 
-	/** This function loads the datasheet test case values to verify that
-	 *  calculations are working correctly. No example checksum is provided
-	 *  so the checksum test may fail.
-	 */
-	void readTestCase();
-
 	/** Pressure returned in mbar or mbar*conversion rate.
 	 */
 	float pressure(float conversion = 1.0f);

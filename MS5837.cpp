@@ -95,36 +95,6 @@ void MS5837::read() {
 	calculate();
 }
 
-void MS5837::readTestCase() {
-	if ( _model == MS5837_02BA ) {
-		C[0] = 0;
-		C[1] = 46372;
-		C[2] = 43981;
-		C[3] = 29059;
-		C[4] = 27842;
-		C[5] = 31553;
-		C[6] = 28165;
-		C[7] = 0;
-
-		D1 = 6465444;
-		D2 = 8077636;
-	} else {
-		C[0] = 0;
-		C[1] = 34982;
-		C[2] = 36352;
-		C[3] = 20328;
-		C[4] = 22354;
-		C[5] = 26646;
-		C[6] = 26146;
-		C[7] = 0;
-
-		D1 = 4958179;
-		D2 = 6815414;
-	}
-
-	calculate();
-}
-
 void MS5837::calculate() {
 	// Given C1-C6 and D1, D2, calculated TEMP and P
 	// Do conversion first and then second order temp compensation
