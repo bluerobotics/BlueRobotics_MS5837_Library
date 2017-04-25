@@ -53,7 +53,7 @@ void setup() {
   while (!sensor.init()) {
     Serial.println("Init failed!");
     Serial.println("Are SDA/SCL connected correctly?");
-    Serial.println("Blue Robotics Bar30: White=SCL Green=SDA");
+    Serial.println("Blue Robotics Bar30: White=SDA, Green=SCL");
     Serial.println("\n\n\n");
     delay(5000);
   }
