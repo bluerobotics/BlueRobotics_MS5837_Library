@@ -126,7 +126,6 @@ void MS5837::calculate() {
 	//Second order compensation
 	if ( _model == MS5837_02BA ) {
 		if((TEMP/100)<20){         //Low temp
-			Serial.println("here");
 			Ti = (11*int64_t(dT)*int64_t(dT))/(34359738368LL);
 			OFFi = (31*(TEMP-2000)*(TEMP-2000))/8;
 			SENSi = (63*(TEMP-2000)*(TEMP-2000))/32;
