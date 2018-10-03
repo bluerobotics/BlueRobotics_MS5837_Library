@@ -150,17 +150,22 @@ void MS5837::calculate() {
 	OFF2 = OFF-OFFi;           //Calculate pressure and temp second order
 	SENS2 = SENS-SENSi;
 	
+	TEMP = (TEMP-Ti);
+	
 	if ( _model == MS5837_02BA ) {
-		TEMP = (TEMP-Ti);
-		P = (((D1*SENS2)/2097152l-OFF2)/32768l)/100;
+		P = (((D1*SENS2)/2097152l-OFF2)/32768l); 
 	} else {
-		TEMP = (TEMP-Ti);
-		P = (((D1*SENS2)/2097152l-OFF2)/8192l)/10;
+		P = (((D1*SENS2)/2097152l-OFF2)/8192l);
 	}
 }
 
 float MS5837::pressure(float conversion) {
-	return P*conversion;
+    if ( _model == MS5837_02BA ) {
+        return P*conversion/100.0f;
+    }
+    else {
+        return P*conversion/10.0f;
+    }
 }
 
 float MS5837::temperature() {
