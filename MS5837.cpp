@@ -5,8 +5,20 @@
 #define MS5837_RESET              0x1E
 #define MS5837_ADC_READ           0x00
 #define MS5837_PROM_READ          0xA0
-#define MS5837_CONVERT_D1_8192    0x4A
-#define MS5837_CONVERT_D2_8192    0x5A
+
+// // OVERSAMPLING SETTINGS
+// #define OSR_256                   0
+// #define OSR_512                   1
+// #define OSR_1024                  2
+// #define OSR_2048                  3
+// #define OSR_4096                  4
+// #define OSR_8192                  5
+
+#define MS5837_CONVERT_D1_256     0x40
+#define MS5837_CONVERT_D2_256     0x50
+
+// #define MS5837_CONVERT_D1_8192    0x4A
+// #define MS5837_CONVERT_D2_8192    0x5A
 
 const float MS5837::Pa = 100.0f;
 const float MS5837::bar = 0.001f;
@@ -57,14 +69,25 @@ void MS5837::setFluidDensity(float density) {
 	fluidDensity = density;
 }
 
+void MS5837::setOverSampling(int oversampling){
+	if (oversampling <= 5 || oversampling >= 0)
+	{
+		_oversampling = oversampling;
+	}
+	else
+	{
+		// Invalid oversampling option
+	}
+}
+
 void MS5837::read() {
 	// Request D1 conversion
 	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_CONVERT_D1_8192);
+	Wire.write(MS5837_CONVERT_D1_256 + 2*_oversampling);
 	Wire.endTransmission();
 
-	delay(20); // Max conversion time per datasheet
-	
+	delayMicroseconds(2.5 * 2**(8+_oversampling));
+
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_ADC_READ);
 	Wire.endTransmission();
@@ -74,14 +97,14 @@ void MS5837::read() {
 	D1 = Wire.read();
 	D1 = (D1 << 8) | Wire.read();
 	D1 = (D1 << 8) | Wire.read();
-	
+
 	// Request D2 conversion
 	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_CONVERT_D2_8192);
+	Wire.write(MS5837_CONVERT_D2_256 + 2*_oversampling);
 	Wire.endTransmission();
 
-	delay(20); // Max conversion time per datasheet
-	
+	delayMicroseconds(2.5 * 2**(8+_oversampling));
+
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_ADC_READ);
 	Wire.endTransmission();
@@ -98,16 +121,16 @@ void MS5837::read() {
 void MS5837::calculate() {
 	// Given C1-C6 and D1, D2, calculated TEMP and P
 	// Do conversion first and then second order temp compensation
-	
+
 	int32_t dT = 0;
 	int64_t SENS = 0;
 	int64_t OFF = 0;
 	int32_t SENSi = 0;
-	int32_t OFFi = 0;  
-	int32_t Ti = 0;    
+	int32_t OFFi = 0;
+	int32_t Ti = 0;
 	int64_t OFF2 = 0;
 	int64_t SENS2 = 0;
-	
+
 	// Terms called
 	dT = D2-uint32_t(C[5])*256l;
 	if ( _model == MS5837_02BA ) {
@@ -119,10 +142,10 @@ void MS5837::calculate() {
 		OFF = int64_t(C[2])*65536l+(int64_t(C[4])*dT)/128l;
 		P = (D1*SENS/(2097152l)-OFF)/(8192l);
 	}
-	
+
 	// Temp conversion
 	TEMP = 2000l+int64_t(dT)*C[6]/8388608LL;
-	
+
 	//Second order compensation
 	if ( _model == MS5837_02BA ) {
 		if((TEMP/100)<20){         //Low temp
@@ -146,14 +169,14 @@ void MS5837::calculate() {
 			SENSi = 0;
 		}
 	}
-	
+
 	OFF2 = OFF-OFFi;           //Calculate pressure and temp second order
 	SENS2 = SENS-SENSi;
-	
+
 	TEMP = (TEMP-Ti);
-	
+
 	if ( _model == MS5837_02BA ) {
-		P = (((D1*SENS2)/2097152l-OFF2)/32768l); 
+		P = (((D1*SENS2)/2097152l-OFF2)/32768l);
 	} else {
 		P = (((D1*SENS2)/2097152l-OFF2)/8192l);
 	}
@@ -201,7 +224,7 @@ uint8_t MS5837::crc4(uint16_t n_prom[]) {
 			}
 		}
 	}
-	
+
 	n_rem = ((n_rem >> 12) & 0x000F);
 
 	return n_rem ^ 0x00;

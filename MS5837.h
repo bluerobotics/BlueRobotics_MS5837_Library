@@ -1,10 +1,10 @@
 /* Blue Robotics Arduino MS5837-30BA Pressure/Temperature Sensor Library
 ------------------------------------------------------------
- 
+
 Title: Blue Robotics Arduino MS5837-30BA Pressure/Temperature Sensor Library
 
 Description: This library provides utilities to communicate with and to
-read data from the Measurement Specialties MS5837-30BA pressure/temperature 
+read data from the Measurement Specialties MS5837-30BA pressure/temperature
 sensor.
 
 Authors: Rustom Jehangir, Blue Robotics Inc.
@@ -32,7 +32,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
--------------------------------*/ 
+-------------------------------*/
 
 #ifndef MS5837_H_BLUEROBOTICS
 #define MS5837_H_BLUEROBOTICS
@@ -57,10 +57,23 @@ public:
 	 */
 	void setModel(uint8_t model);
 
-	/** Provide the density of the working fluid in kg/m^3. Default is for 
+	/** Provide the density of the working fluid in kg/m^3. Default is for
 	 * seawater. Should be 997 for freshwater.
 	 */
 	void setFluidDensity(float density);
+
+    /** Oversampling setting. This enables user to select the sampling rate
+     * Maximum conversion time increases linearly with oversampling
+     * max time (seconds) ~= 2.2e-6(x) where x = OSR = (2^8, 2^9, ..., 2^13)
+     * We use 2.5e-6 for some overhead
+     * OSR_256  = 0
+     * OSR_512  = 1
+     * OSR_1024 = 2
+     * OSR_2048 = 3
+     * OSR_4096 = 4
+     * OSR_8192 = 5
+     */
+    void setOverSampling(int oversampling);
 
 	/** The read from I2C takes up to 40 ms, so use sparingly is possible.
 	 */
@@ -89,6 +102,10 @@ private:
 	int32_t TEMP;
 	int32_t P;
 	uint8_t _model;
+
+    /** Default value of oversampling is set to 8192
+     */
+    uint8_t _oversampling = 5;
 
 	float fluidDensity;
 
