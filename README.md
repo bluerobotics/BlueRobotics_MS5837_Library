@@ -21,10 +21,23 @@ bool init();
  */
 void setModel(uint8_t model);
 
-/** Provide the density of the working fluid in kg/m^3. Default is for 
+/** Provide the density of the working fluid in kg/m^3. Default is for
  * seawater. Should be 997 for freshwater.
  */
 void setFluidDensity(float density);
+
+/** Oversampling setting. This enables user to select the sampling rate
+ * Maximum conversion time increases linearly with oversampling
+ * max time (seconds) ~= 2.2e-6(x) where x = OSR = (2^8, 2^9, ..., 2^13)
+ * We use 2.5e-6 for some overhead
+ * OSR_256  = 0
+ * OSR_512  = 1
+ * OSR_1024 = 2
+ * OSR_2048 = 3
+ * OSR_4096 = 4
+ * OSR_8192 = 5
+ */
+void setOverSampling(int oversampling);
 
 /** The read from I2C takes up for 40 ms, so use sparingly is possible.
  */

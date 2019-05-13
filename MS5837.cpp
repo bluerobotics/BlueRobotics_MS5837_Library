@@ -6,19 +6,8 @@
 #define MS5837_ADC_READ           0x00
 #define MS5837_PROM_READ          0xA0
 
-// // OVERSAMPLING SETTINGS
-// #define OSR_256                   0
-// #define OSR_512                   1
-// #define OSR_1024                  2
-// #define OSR_2048                  3
-// #define OSR_4096                  4
-// #define OSR_8192                  5
-
 #define MS5837_CONVERT_D1_256     0x40
 #define MS5837_CONVERT_D2_256     0x50
-
-// #define MS5837_CONVERT_D1_8192    0x4A
-// #define MS5837_CONVERT_D2_8192    0x5A
 
 const float MS5837::Pa = 100.0f;
 const float MS5837::bar = 0.001f;
