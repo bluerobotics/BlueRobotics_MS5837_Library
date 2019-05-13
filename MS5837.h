@@ -48,6 +48,13 @@ public:
 	static const uint8_t MS5837_30BA;
 	static const uint8_t MS5837_02BA;
 
+    static const uint8_t OSR_256;
+    static const uint8_t OSR_512;
+    static const uint8_t OSR_1024;
+    static const uint8_t OSR_2048;
+    static const uint8_t OSR_4096;
+    static const uint8_t OSR_8192;
+
 	MS5837();
 
 	bool init();

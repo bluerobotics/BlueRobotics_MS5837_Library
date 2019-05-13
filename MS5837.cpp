@@ -1,7 +1,7 @@
 #include "MS5837.h"
 #include <Wire.h>
 
-#define MS5837_ADDR               0x76  
+#define MS5837_ADDR               0x76
 #define MS5837_RESET              0x1E
 #define MS5837_ADC_READ           0x00
 #define MS5837_PROM_READ          0xA0
@@ -26,6 +26,13 @@ const float MS5837::mbar = 1.0f;
 
 const uint8_t MS5837::MS5837_30BA = 0;
 const uint8_t MS5837::MS5837_02BA = 1;
+
+const uint8_t MS5837::OSR_256  = 0;
+const uint8_t MS5837::OSR_512  = 1;
+const uint8_t MS5837::OSR_1024 = 2;
+const uint8_t MS5837::OSR_2048 = 3;
+const uint8_t MS5837::OSR_4096 = 4;
+const uint8_t MS5837::OSR_8192 = 5;
 
 MS5837::MS5837() {
 	fluidDensity = 1029;
