@@ -1,5 +1,6 @@
 #include "MS5837.h"
 #include <Wire.h>
+#include "math.h"
 
 #define MS5837_ADDR               0x76
 #define MS5837_RESET              0x1E
@@ -82,7 +83,7 @@ void MS5837::read() {
 	Wire.write(MS5837_CONVERT_D1_256 + 2*_oversampling);
 	Wire.endTransmission();
 
-	delayMicroseconds(2.5 * 2**(8+_oversampling));
+	delayMicroseconds(2.5 * pow(2, 8+_oversampling));
 
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_ADC_READ);
@@ -99,7 +100,7 @@ void MS5837::read() {
 	Wire.write(MS5837_CONVERT_D2_256 + 2*_oversampling);
 	Wire.endTransmission();
 
-	delayMicroseconds(2.5 * 2**(8+_oversampling));
+	delayMicroseconds(2.5 * pow(2, 8+_oversampling));
 
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_ADC_READ);
