@@ -1,11 +1,26 @@
 #include "MS5837.h"
 #include <Wire.h>
+#include "math.h"
 
 #define MS5837_ADDR               0x76  
 #define MS5837_RESET              0x1E
 #define MS5837_ADC_READ           0x00
 #define MS5837_PROM_READ          0xA0
+
+// Pressure Conversion
+#define MS5837_CONVERT_D1_256     0x40
+#define MS5837_CONVERT_D1_512     0x42
+#define MS5837_CONVERT_D1_1024    0x44
+#define MS5837_CONVERT_D1_2048    0x46
+#define MS5837_CONVERT_D1_4096    0x48
 #define MS5837_CONVERT_D1_8192    0x4A
+
+// Temperature Conversion
+#define MS5837_CONVERT_D2_256     0x50
+#define MS5837_CONVERT_D2_512     0x52
+#define MS5837_CONVERT_D2_1024    0x54
+#define MS5837_CONVERT_D2_2048    0x56
+#define MS5837_CONVERT_D2_4096    0x58
 #define MS5837_CONVERT_D2_8192    0x5A
 
 const float MS5837::Pa = 100.0f;
@@ -57,14 +72,18 @@ void MS5837::setFluidDensity(float density) {
 	fluidDensity = density;
 }
 
+void MS5837::setOverSampling(MS5837_CONVERT_OVERSAMPLING oversampling){
+	_oversampling = (int)oversampling;
+}
+
 void MS5837::read() {
 	// Request D1 conversion
 	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_CONVERT_D1_8192);
+	Wire.write(MS5837_CONVERT_D1_256 + 2*_oversampling);
 	Wire.endTransmission();
 
-	delay(20); // Max conversion time per datasheet
-	
+	delayMicroseconds(2.5 * pow(2, 8+_oversampling));
+
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_ADC_READ);
 	Wire.endTransmission();
@@ -77,11 +96,11 @@ void MS5837::read() {
 	
 	// Request D2 conversion
 	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_CONVERT_D2_8192);
+	Wire.write(MS5837_CONVERT_D2_256 + 2*_oversampling);
 	Wire.endTransmission();
 
-	delay(20); // Max conversion time per datasheet
-	
+	delayMicroseconds(2.5 * pow(2, 8+_oversampling));
+
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_ADC_READ);
 	Wire.endTransmission();
