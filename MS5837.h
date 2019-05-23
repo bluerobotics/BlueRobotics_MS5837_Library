@@ -118,6 +118,9 @@ private:
 
 	float fluidDensity;
 
+	// 2.5 * pow(2, 8+_oversampling)
+    int delay_lookup[6] = {640, 1280, 2560, 5120, 10240, 20480};
+
 	/** Performs calculations per the sensor data sheet for conversion and
 	 *  second order compensation.
 	 */

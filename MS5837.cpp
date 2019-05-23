@@ -82,7 +82,7 @@ void MS5837::read() {
 	Wire.write(MS5837_CONVERT_D1_256 + 2*_oversampling);
 	Wire.endTransmission();
 
-	delayMicroseconds(2.5 * pow(2, 8+_oversampling));
+	delayMicroseconds(delay_lookup[_oversampling]);
 
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_ADC_READ);
@@ -99,7 +99,7 @@ void MS5837::read() {
 	Wire.write(MS5837_CONVERT_D2_256 + 2*_oversampling);
 	Wire.endTransmission();
 
-	delayMicroseconds(2.5 * pow(2, 8+_oversampling));
+	delayMicroseconds(delay_lookup[_oversampling]);
 
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_ADC_READ);
