@@ -88,6 +88,12 @@ public:
 	 */
 	void read();
 
+	/** The read from I2C takes up to 40 ms, so use sparingly is possible.
+	 */
+	void readNonBlocking();
+
+	void incrementTime(uint16_t increment_value);
+
 	/** Pressure returned in mbar or mbar*conversion rate.
 	 */
 	float pressure(float conversion = 1.0f);
@@ -111,6 +117,8 @@ private:
 	int32_t TEMP;
 	int32_t P;
 	uint8_t _model;
+	uint8_t _active_request = 0; // 0:No request, 1: Temp request, 2: Pressure request
+	uint16_t _microsecond_counter = 0;
 
     /** Default value of oversampling is set to 8192
      */

@@ -76,6 +76,72 @@ void MS5837::setOverSampling(MS5837_CONVERT_OVERSAMPLING oversampling){
 	_oversampling = (int)oversampling;
 }
 
+void MS5837::readNonBlocking()
+{
+	if (_active_request == 0)
+	{
+		Wire.beginTransmission(MS5837_ADDR);
+		Wire.write(MS5837_CONVERT_D1_256 + 2*_oversampling);
+		Wire.endTransmission();
+		_active_request = 1;
+		_microsecond_counter = 0;
+		Serial.println("sent d1");
+	}
+	else if (_active_request == 1)
+	{
+		if (_microsecond_counter >= delay_lookup[_oversampling])
+		{
+			// we've waited enough, so ask for response
+			Wire.beginTransmission(MS5837_ADDR);
+			Wire.write(MS5837_ADC_READ);
+			Wire.endTransmission();
+
+			Wire.requestFrom(MS5837_ADDR,3);
+			D1 = 0;
+			D1 = Wire.read();
+			D1 = (D1 << 8) | Wire.read();
+			D1 = (D1 << 8) | Wire.read();
+			_active_request = 2;
+			_microsecond_counter = 0;
+
+			// Request D2 conversion
+			Wire.beginTransmission(MS5837_ADDR);
+			Wire.write(MS5837_CONVERT_D2_256 + 2*_oversampling);
+			Wire.endTransmission();
+			Serial.println("got d1");
+			Serial.println("sent d2");
+		}
+	}
+	else if (_active_request == 2)
+	{
+		if (_microsecond_counter >= delay_lookup[_oversampling])
+		{
+			// we've waited enough, so ask for response
+			Wire.beginTransmission(MS5837_ADDR);
+			Wire.write(MS5837_ADC_READ);
+			Wire.endTransmission();
+
+			Wire.requestFrom(MS5837_ADDR,3);
+			D2 = 0;
+			D2 = Wire.read();
+			D2 = (D2 << 8) | Wire.read();
+			D2 = (D2 << 8) | Wire.read();
+
+			calculate();
+			Serial.println(pressure());
+			_active_request = 0;
+			_microsecond_counter = 0;
+			Serial.println("got d2");
+		}
+	}
+
+}
+
+void MS5837::incrementTime(uint16_t increment_value)
+{
+	_microsecond_counter += increment_value;
+}
+
 void MS5837::read() {
 	// Request D1 conversion
 	Wire.beginTransmission(MS5837_ADDR);
