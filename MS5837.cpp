@@ -70,10 +70,10 @@ void MS5837::read() {
 	Wire.endTransmission();
 
  	Wire.requestFrom(MS5837_ADDR,3);
-	D1 = 0;
-	D1 = Wire.read();
-	D1 = (D1 << 8) | Wire.read();
-	D1 = (D1 << 8) | Wire.read();
+	D1_pres = 0;
+	D1_pres = Wire.read();
+	D1_pres = (D1_pres << 8) | Wire.read();
+	D1_pres = (D1_pres << 8) | Wire.read();
 	
 	// Request D2 conversion
 	Wire.beginTransmission(MS5837_ADDR);
@@ -87,10 +87,10 @@ void MS5837::read() {
 	Wire.endTransmission();
 
 	Wire.requestFrom(MS5837_ADDR,3);
-	D2 = 0;
-	D2 = Wire.read();
-	D2 = (D2 << 8) | Wire.read();
-	D2 = (D2 << 8) | Wire.read();
+	D2_temp = 0;
+	D2_temp = Wire.read();
+	D2_temp = (D2_temp << 8) | Wire.read();
+	D2_temp = (D2_temp << 8) | Wire.read();
 
 	calculate();
 }
@@ -109,15 +109,15 @@ void MS5837::calculate() {
 	int64_t SENS2 = 0;
 	
 	// Terms called
-	dT = D2-uint32_t(C[5])*256l;
+	dT = D2_temp-uint32_t(C[5])*256l;
 	if ( _model == MS5837_02BA ) {
 		SENS = int64_t(C[1])*65536l+(int64_t(C[3])*dT)/128l;
 		OFF = int64_t(C[2])*131072l+(int64_t(C[4])*dT)/64l;
-		P = (D1*SENS/(2097152l)-OFF)/(32768l);
+		P = (D1_pres*SENS/(2097152l)-OFF)/(32768l);
 	} else {
 		SENS = int64_t(C[1])*32768l+(int64_t(C[3])*dT)/256l;
 		OFF = int64_t(C[2])*65536l+(int64_t(C[4])*dT)/128l;
-		P = (D1*SENS/(2097152l)-OFF)/(8192l);
+		P = (D1_pres*SENS/(2097152l)-OFF)/(8192l);
 	}
 	
 	// Temp conversion
@@ -153,9 +153,9 @@ void MS5837::calculate() {
 	TEMP = (TEMP-Ti);
 	
 	if ( _model == MS5837_02BA ) {
-		P = (((D1*SENS2)/2097152l-OFF2)/32768l); 
+		P = (((D1_pres*SENS2)/2097152l-OFF2)/32768l); 
 	} else {
-		P = (((D1*SENS2)/2097152l-OFF2)/8192l);
+		P = (((D1_pres*SENS2)/2097152l-OFF2)/8192l);
 	}
 }
 
