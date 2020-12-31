@@ -60,13 +60,13 @@ void MS5837::setFluidDensity(float density) {
 void MS5837::read() {
 	// Request D1 conversion
 	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_CONVERT_D1_8192);
+	Wire.write((int)MS5837_CONVERT_D1_8192);
 	Wire.endTransmission();
 
 	delay(20); // Max conversion time per datasheet
 	
 	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_ADC_READ);
+	Wire.write((int)MS5837_ADC_READ);
 	Wire.endTransmission();
 
  	Wire.requestFrom(MS5837_ADDR,3);
@@ -83,7 +83,7 @@ void MS5837::read() {
 	delay(20); // Max conversion time per datasheet
 	
 	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_ADC_READ);
+	Wire.write((int)MS5837_ADC_READ);
 	Wire.endTransmission();
 
 	Wire.requestFrom(MS5837_ADDR,3);
