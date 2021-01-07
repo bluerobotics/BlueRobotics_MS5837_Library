@@ -172,6 +172,12 @@ float MS5837::temperature() {
 	return TEMP/100.0f;
 }
 
+// The pressure sensor measures absolute pressure, so it will measure the atmospheric pressure + water pressure
+// We subtract the atmospheric pressure to calculate the depth with only the water pressure
+// The average atmospheric pressure of 101300 pascal is used for the calcuation, but atmospheric pressure varies
+// If the atmospheric pressure is not 101300 at the time of reading, the depth reported will be offset
+// In order to calculate the correct depth, the actual atmospheric pressure should be measured once in air, and
+// that value should subtracted for subsequent depth calculations.
 float MS5837::depth() {
 	return (pressure(MS5837::Pa)-101300)/(fluidDensity*9.80665);
 }
