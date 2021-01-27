@@ -19,6 +19,10 @@ MS5837::MS5837() {
 	fluidDensity = 1029;
 }
 
+bool MS5837::begin() {
+	return (init());
+}
+
 bool MS5837::init() {
 	// Reset the MS5837, per datasheet
 	Wire.beginTransmission(MS5837_ADDR);
