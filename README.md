@@ -13,20 +13,27 @@ MS5837();
 
 /** Must be called before attempting to operate the sensor.
  * Returns true if the sensor was initialized successfully.
+ * wirePort is optional and defaults to Wire.
+ * You can select a different port by calling (e.g.) init(Wire1)
  */
-bool init();
+bool init(TwoWire &wirePort);
+
+/** Calls init.
+ * Returns true if the sensor was initialized successfully.
+ */
+bool begin(TwoWire &wirePort);
 
 /** Set model of MS5837 sensor. Valid options are MS5837::MS5837_30BA (default)
  * and MS5837::MS5837_02BA.
  */
 void setModel(uint8_t model);
 
-/** Provide the density of the working fluid in kg/m^3. Default is for 
+/** Provide the density of the working fluid in kg/m^3. Default is for
  * seawater. Should be 997 for freshwater.
  */
 void setFluidDensity(float density);
 
-/** The read from I2C takes up for 40 ms, so use sparingly is possible.
+/** The read from I2C takes up for 40 ms, so use sparingly if possible.
  */
 void read();
 
