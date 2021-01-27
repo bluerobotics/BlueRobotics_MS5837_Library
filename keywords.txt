@@ -1,0 +1,29 @@
+#######################################
+# Syntax Coloring Map
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MS5837	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+init	KEYWORD2
+setModel	KEYWORD2
+setFluidDensity	KEYWORD2
+read	KEYWORD2
+pressure	KEYWORD2
+temperature	KEYWORD2
+depth	KEYWORD2
+altitude	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+MS5837_30BA	LITERAL1
+MS5837_02BA	LITERAL1
