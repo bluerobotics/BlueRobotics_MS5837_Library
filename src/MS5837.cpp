@@ -19,27 +19,29 @@ MS5837::MS5837() {
 	fluidDensity = 1029;
 }
 
-bool MS5837::begin() {
-	return (init());
+bool MS5837::begin(TwoWire &wirePort) {
+	return (init(wirePort));
 }
 
-bool MS5837::init() {
+bool MS5837::init(TwoWire &wirePort) {
+	_i2cPort = &wirePort; //Grab which port the user wants us to use
+
 	// Reset the MS5837, per datasheet
-	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_RESET);
-	Wire.endTransmission();
+	_i2cPort->beginTransmission(MS5837_ADDR);
+	_i2cPort->write(MS5837_RESET);
+	_i2cPort->endTransmission();
 
 	// Wait for reset to complete
 	delay(10);
 
 	// Read calibration values and CRC
 	for ( uint8_t i = 0 ; i < 7 ; i++ ) {
-		Wire.beginTransmission(MS5837_ADDR);
-		Wire.write(MS5837_PROM_READ+i*2);
-		Wire.endTransmission();
+		_i2cPort->beginTransmission(MS5837_ADDR);
+		_i2cPort->write(MS5837_PROM_READ+i*2);
+		_i2cPort->endTransmission();
 
-		Wire.requestFrom(MS5837_ADDR,2);
-		C[i] = (Wire.read() << 8) | Wire.read();
+		_i2cPort->requestFrom(MS5837_ADDR,2);
+		C[i] = (_i2cPort->read() << 8) | _i2cPort->read();
 	}
 
 	// Verify that data is correct with CRC
@@ -63,38 +65,38 @@ void MS5837::setFluidDensity(float density) {
 
 void MS5837::read() {
 	// Request D1 conversion
-	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_CONVERT_D1_8192);
-	Wire.endTransmission();
+	_i2cPort->beginTransmission(MS5837_ADDR);
+	_i2cPort->write(MS5837_CONVERT_D1_8192);
+	_i2cPort->endTransmission();
 
 	delay(20); // Max conversion time per datasheet
 
-	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_ADC_READ);
-	Wire.endTransmission();
+	_i2cPort->beginTransmission(MS5837_ADDR);
+	_i2cPort->write(MS5837_ADC_READ);
+	_i2cPort->endTransmission();
 
- 	Wire.requestFrom(MS5837_ADDR,3);
+ 	_i2cPort->requestFrom(MS5837_ADDR,3);
 	D1_pres = 0;
-	D1_pres = Wire.read();
-	D1_pres = (D1_pres << 8) | Wire.read();
-	D1_pres = (D1_pres << 8) | Wire.read();
+	D1_pres = _i2cPort->read();
+	D1_pres = (D1_pres << 8) | _i2cPort->read();
+	D1_pres = (D1_pres << 8) | _i2cPort->read();
 
 	// Request D2 conversion
-	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_CONVERT_D2_8192);
-	Wire.endTransmission();
+	_i2cPort->beginTransmission(MS5837_ADDR);
+	_i2cPort->write(MS5837_CONVERT_D2_8192);
+	_i2cPort->endTransmission();
 
 	delay(20); // Max conversion time per datasheet
 
-	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_ADC_READ);
-	Wire.endTransmission();
+	_i2cPort->beginTransmission(MS5837_ADDR);
+	_i2cPort->write(MS5837_ADC_READ);
+	_i2cPort->endTransmission();
 
-	Wire.requestFrom(MS5837_ADDR,3);
+	_i2cPort->requestFrom(MS5837_ADDR,3);
 	D2_temp = 0;
-	D2_temp = Wire.read();
-	D2_temp = (D2_temp << 8) | Wire.read();
-	D2_temp = (D2_temp << 8) | Wire.read();
+	D2_temp = _i2cPort->read();
+	D2_temp = (D2_temp << 8) | _i2cPort->read();
+	D2_temp = (D2_temp << 8) | _i2cPort->read();
 
 	calculate();
 }

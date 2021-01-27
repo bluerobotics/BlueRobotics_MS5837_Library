@@ -38,6 +38,7 @@ THE SOFTWARE.
 #define MS5837_H_BLUEROBOTICS
 
 #include "Arduino.h"
+#include <Wire.h>
 
 class MS5837 {
 public:
@@ -50,8 +51,8 @@ public:
 
 	MS5837();
 
-	bool init();
-  bool begin(); // Calls init()
+	bool init(TwoWire &wirePort = Wire);
+  bool begin(TwoWire &wirePort = Wire); // Calls init()
 
 	/** Set model of MS5837 sensor. Valid options are MS5837::MS5837_30BA (default)
 	 * and MS5837::MS5837_02BA.
@@ -85,6 +86,10 @@ public:
 	float altitude();
 
 private:
+
+  //This stores the requested i2c port
+  TwoWire * _i2cPort;
+
 	uint16_t C[8];
 	uint32_t D1_pres, D2_temp;
 	int32_t TEMP;
