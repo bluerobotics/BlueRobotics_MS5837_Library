@@ -12,6 +12,7 @@ MS5837	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
+begin	KEYWORD2
 init	KEYWORD2
 setModel	KEYWORD2
 setFluidDensity	KEYWORD2
