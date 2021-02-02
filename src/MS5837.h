@@ -52,13 +52,13 @@ public:
 	MS5837();
 
 	bool init(TwoWire &wirePort = Wire);
-  bool begin(TwoWire &wirePort = Wire); // Calls init()
+	bool begin(TwoWire &wirePort = Wire); // Calls init()
 
 	/** Set model of MS5837 sensor. Valid options are MS5837::MS5837_30BA (default)
 	 * and MS5837::MS5837_02BA.
 	 */
 	void setModel(uint8_t model);
-	uint8_t getModel(void);
+	uint8_t getModel();
 
 	/** Provide the density of the working fluid in kg/m^3. Default is for
 	 * seawater. Should be 997 for freshwater.
@@ -88,8 +88,8 @@ public:
 
 private:
 
-  //This stores the requested i2c port
-  TwoWire * _i2cPort;
+	//This stores the requested i2c port
+	TwoWire * _i2cPort;
 
 	uint16_t C[8];
 	uint32_t D1_pres, D2_temp;
