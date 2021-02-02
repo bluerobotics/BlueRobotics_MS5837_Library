@@ -48,11 +48,31 @@ bool MS5837::init(TwoWire &wirePort) {
 	uint8_t crcRead = C[0] >> 12;
 	uint8_t crcCalculated = crc4(C);
 
-	if ( crcCalculated == crcRead ) {
-		return true; // Initialization success
+	if ( crcCalculated != crcRead ) {
+		return false; // CRC fail
 	}
 
-	return false; // CRC fail
+	uint8_t version = (C[0] >> 5) & 0x7F; // Extract the sensor version
+
+	if (version == 0x00) // MS5837-02BA01
+	{
+		_model = MS5837_02BA;
+		return true;
+	}
+	else if (version == 0x15) // MS5837-02BA21
+	{
+		_model = MS5837_02BA;
+		return true;
+	}
+	else if (version == 0x1A) // MS5837-30BA26
+	{
+		_model = MS5837_30BA;
+		return true;
+	}
+	else
+	{
+		return false; // Unrecognised sensor
+	}
 }
 
 void MS5837::setModel(uint8_t model) {
