@@ -15,6 +15,7 @@ MS5837	KEYWORD1
 begin	KEYWORD2
 init	KEYWORD2
 setModel	KEYWORD2
+getModel	KEYWORD2
 setFluidDensity	KEYWORD2
 read	KEYWORD2
 pressure	KEYWORD2
