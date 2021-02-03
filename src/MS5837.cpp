@@ -79,6 +79,10 @@ void MS5837::setModel(uint8_t model) {
 	_model = model;
 }
 
+uint8_t MS5837::getModel(void) {
+	return (_model);
+}
+
 void MS5837::setFluidDensity(float density) {
 	fluidDensity = density;
 }

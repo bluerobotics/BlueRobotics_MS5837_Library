@@ -58,6 +58,7 @@ public:
 	 * and MS5837::MS5837_02BA.
 	 */
 	void setModel(uint8_t model);
+	uint8_t getModel(void);
 
 	/** Provide the density of the working fluid in kg/m^3. Default is for
 	 * seawater. Should be 997 for freshwater.
