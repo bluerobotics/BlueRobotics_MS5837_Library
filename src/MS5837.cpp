@@ -79,7 +79,7 @@ void MS5837::setModel(uint8_t model) {
 	_model = model;
 }
 
-uint8_t MS5837::getModel(void) {
+uint8_t MS5837::getModel() {
 	return (_model);
 }
 
@@ -88,6 +88,12 @@ void MS5837::setFluidDensity(float density) {
 }
 
 void MS5837::read() {
+	//Check that _i2cPort is not NULL (i.e. has the user forgoten to call .init or .begin?)
+	if (_i2cPort == NULL)
+	{
+		return;
+	}
+
 	// Request D1 conversion
 	_i2cPort->beginTransmission(MS5837_ADDR);
 	_i2cPort->write(MS5837_CONVERT_D1_8192);
@@ -99,7 +105,7 @@ void MS5837::read() {
 	_i2cPort->write(MS5837_ADC_READ);
 	_i2cPort->endTransmission();
 
- 	_i2cPort->requestFrom(MS5837_ADDR,3);
+	_i2cPort->requestFrom(MS5837_ADDR,3);
 	D1_pres = 0;
 	D1_pres = _i2cPort->read();
 	D1_pres = (D1_pres << 8) | _i2cPort->read();
@@ -190,12 +196,12 @@ void MS5837::calculate() {
 }
 
 float MS5837::pressure(float conversion) {
-    if ( _model == MS5837_02BA ) {
-        return P*conversion/100.0f;
-    }
-    else {
-        return P*conversion/10.0f;
-    }
+	if ( _model == MS5837_02BA ) {
+		return P*conversion/100.0f;
+	}
+	else {
+		return P*conversion/10.0f;
+	}
 }
 
 float MS5837::temperature() {
