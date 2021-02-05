@@ -14,6 +14,11 @@ const float MS5837::mbar = 1.0f;
 
 const uint8_t MS5837::MS5837_30BA = 0;
 const uint8_t MS5837::MS5837_02BA = 1;
+const uint8_t MS5837::MS5837_UNRECOGNISED = 255;
+
+const uint8_t MS5837_02BA01 = 0x00; // Sensor version: From MS5837_02BA datasheet Version PROM Word 0
+const uint8_t MS5837_02BA21 = 0x15; // Sensor version: From MS5837_02BA datasheet Version PROM Word 0
+const uint8_t MS5837_30BA26 = 0x1A; // Sensor version: From MS5837_30BA datasheet Version PROM Word 0
 
 MS5837::MS5837() {
 	fluidDensity = 1029;
@@ -52,27 +57,30 @@ bool MS5837::init(TwoWire &wirePort) {
 		return false; // CRC fail
 	}
 
-	uint8_t version = (C[0] >> 5) & 0x7F; // Extract the sensor version
+	uint8_t version = (C[0] >> 5) & 0x7F; // Extract the sensor version from PROM Word 0
 
-	if (version == 0x00) // MS5837-02BA01
+	// Set _model according to the sensor version
+	if (version == MS5837_02BA01)
 	{
 		_model = MS5837_02BA;
-		return true;
 	}
-	else if (version == 0x15) // MS5837-02BA21
+	else if (version == MS5837_02BA21)
 	{
 		_model = MS5837_02BA;
-		return true;
 	}
-	else if (version == 0x1A) // MS5837-30BA26
+	else if (version == MS5837_30BA26)
 	{
 		_model = MS5837_30BA;
-		return true;
 	}
 	else
 	{
-		return false; // Unrecognised sensor
+		_model = MS5837_UNRECOGNISED;
 	}
+	// The sensor has passed the CRC check, so we should return true even if
+	// the sensor version is unrecognised.
+	// (The MS5637 has the same address as the MS5837 and will also pass the CRC check)
+	// (but will hopefully be unrecognised.)
+	return true;
 }
 
 void MS5837::setModel(uint8_t model) {
