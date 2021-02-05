@@ -48,6 +48,7 @@ public:
 
 	static const uint8_t MS5837_30BA;
 	static const uint8_t MS5837_02BA;
+	static const uint8_t MS5837_UNRECOGNISED;
 
 	MS5837();
 
