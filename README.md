@@ -26,6 +26,10 @@ void setModel(uint8_t model);
  */
 void setFluidDensity(float density);
 
+/** Oversampling setting. This enables user to select the sampling rate
+ */
+void setOverSampling(int oversampling);
+
 /** The read from I2C takes up for 40 ms, so use sparingly is possible.
  */
 void read();
