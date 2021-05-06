@@ -34,7 +34,9 @@ bool MS5837::init(TwoWire &wirePort) {
 	// Reset the MS5837, per datasheet
 	_i2cPort->beginTransmission(MS5837_ADDR);
 	_i2cPort->write(MS5837_RESET);
-	_i2cPort->endTransmission();
+	if (_i2cPort->endTransmission() != 0) {
+		return false;
+	}
 
 	// Wait for reset to complete
 	delay(10);
@@ -43,9 +45,13 @@ bool MS5837::init(TwoWire &wirePort) {
 	for ( uint8_t i = 0 ; i < 7 ; i++ ) {
 		_i2cPort->beginTransmission(MS5837_ADDR);
 		_i2cPort->write(MS5837_PROM_READ+i*2);
-		_i2cPort->endTransmission();
+		if (_i2cPort->endTransmission() != 0) {
+			return false;
+		}
 
-		_i2cPort->requestFrom(MS5837_ADDR,2);
+		if (_i2cPort->requestFrom(MS5837_ADDR,(uint8_t)2) != 2) {
+			return false;
+		}
 		C[i] = (_i2cPort->read() << 8) | _i2cPort->read();
 	}
 
@@ -95,25 +101,31 @@ void MS5837::setFluidDensity(float density) {
 	fluidDensity = density;
 }
 
-void MS5837::read() {
+bool MS5837::read() {
 	//Check that _i2cPort is not NULL (i.e. has the user forgoten to call .init or .begin?)
 	if (_i2cPort == NULL)
 	{
-		return;
+		return false;
 	}
 
 	// Request D1 conversion
 	_i2cPort->beginTransmission(MS5837_ADDR);
 	_i2cPort->write(MS5837_CONVERT_D1_8192);
-	_i2cPort->endTransmission();
+	if (_i2cPort->endTransmission() != 0) {
+		return false;
+	}
 
 	delay(20); // Max conversion time per datasheet
 
 	_i2cPort->beginTransmission(MS5837_ADDR);
 	_i2cPort->write(MS5837_ADC_READ);
-	_i2cPort->endTransmission();
+	if (_i2cPort->endTransmission() != 0) {
+		return false;
+	}
 
-	_i2cPort->requestFrom(MS5837_ADDR,3);
+	if (_i2cPort->requestFrom(MS5837_ADDR,(uint8_t)3) != 3) {
+		return false;
+	}
 	D1_pres = 0;
 	D1_pres = _i2cPort->read();
 	D1_pres = (D1_pres << 8) | _i2cPort->read();
@@ -122,21 +134,28 @@ void MS5837::read() {
 	// Request D2 conversion
 	_i2cPort->beginTransmission(MS5837_ADDR);
 	_i2cPort->write(MS5837_CONVERT_D2_8192);
-	_i2cPort->endTransmission();
+	if (_i2cPort->endTransmission() != 0) {
+		return false;
+	}
 
 	delay(20); // Max conversion time per datasheet
 
 	_i2cPort->beginTransmission(MS5837_ADDR);
 	_i2cPort->write(MS5837_ADC_READ);
-	_i2cPort->endTransmission();
+	if (_i2cPort->endTransmission() != 0) {
+		return false;
+	}
 
-	_i2cPort->requestFrom(MS5837_ADDR,3);
+	if (_i2cPort->requestFrom(MS5837_ADDR,(uint8_t)3) != 3) {
+		return false;
+	}
 	D2_temp = 0;
 	D2_temp = _i2cPort->read();
 	D2_temp = (D2_temp << 8) | _i2cPort->read();
 	D2_temp = (D2_temp << 8) | _i2cPort->read();
 
 	calculate();
+	return true;
 }
 
 void MS5837::calculate() {
