@@ -52,6 +52,8 @@ public:
 
 	MS5837();
 
+	/** Returns false if an error occurred, otherwise true for success.
+	 */
 	bool init(TwoWire &wirePort = Wire);
 	bool begin(TwoWire &wirePort = Wire); // Calls init()
 
@@ -67,8 +69,9 @@ public:
 	void setFluidDensity(float density);
 
 	/** The read from I2C takes up to 40 ms, so use sparingly is possible.
+	 * Returns false if an I2C error occurred, otherwise true for success.
 	 */
-	void read();
+	bool read();
 
 	/** Pressure returned in mbar or mbar*conversion rate.
 	 */
