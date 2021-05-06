@@ -49,7 +49,7 @@ bool MS5837::init(TwoWire &wirePort) {
 			return false;
 		}
 
-		if (_i2cPort->requestFrom(MS5837_ADDR,2) != 2) {
+		if (_i2cPort->requestFrom(MS5837_ADDR,(uint8_t)2) != 2) {
 			return false;
 		}
 		C[i] = (_i2cPort->read() << 8) | _i2cPort->read();
@@ -123,7 +123,7 @@ bool MS5837::read() {
 		return false;
 	}
 
-	if (_i2cPort->requestFrom(MS5837_ADDR,3) != 3) {
+	if (_i2cPort->requestFrom(MS5837_ADDR,(uint8_t)3) != 3) {
 		return false;
 	}
 	D1_pres = 0;
@@ -146,7 +146,7 @@ bool MS5837::read() {
 		return false;
 	}
 
-	if (_i2cPort->requestFrom(MS5837_ADDR,3) != 3) {
+	if (_i2cPort->requestFrom(MS5837_ADDR,(uint8_t)3) != 3) {
 		return false;
 	}
 	D2_temp = 0;
