@@ -100,7 +100,6 @@ void MS5837::read() {
 	static uint32_t tempReadStartTime  = 0;
 	
 	static bool pressReadNext = true;
-	bool newData = false;
 	
 	//Check that _i2cPort is not NULL (i.e. has the user forgoten to call .init or .begin?)
 	if (_i2cPort == NULL)
@@ -108,6 +107,7 @@ void MS5837::read() {
 		return;
 	}
 	
+	//if 20ms have passed since read AND the next reading should be a D1 (pressure) reading, read.
 	if(millis() - pressReadStartTime > 20 && pressReadNext) {
 		//get requested D1 numbers
 		_i2cPort->beginTransmission(MS5837_ADDR);
@@ -125,10 +125,10 @@ void MS5837::read() {
 		_i2cPort->write(MS5837_CONVERT_D2_8192);
 		_i2cPort->endTransmission();
 		
-		tempReadStartTime = millis();
-		pressReadNext = false;
-		newData = true;
-		//Serial.println("read D1, started D2");
+		tempReadStartTime = millis(); //start a timer for the temperature read
+		pressReadNext = false; //ensure the next reading is a temperautre reading
+		
+		calculate(); //calculate only gets run when necessary
 	}
 	
 	if(millis() - tempReadStartTime > 20 && !pressReadNext) {
@@ -150,12 +150,8 @@ void MS5837::read() {
 		
 		pressReadStartTime = millis();
 		pressReadNext = true;
-		newData = true;
-	}
-	
-	if(newData) {
+		
 		calculate();
-		newData = false;
 	}
 }
 
