@@ -168,20 +168,20 @@ void MS5837::calculate() {
 	int64_t OFF2 = 0;
 	int64_t SENS2 = 0;
 
-	// Terms called
-	dT = D2_temp-uint32_t(C[5])*256l;
-	if ( _model == MS5837_02BA ) {
-		SENS = int64_t(C[1])*65536l+(int64_t(C[3])*dT)/128l;
-		OFF = int64_t(C[2])*131072l+(int64_t(C[4])*dT)/64l;
-		P = (D1_pres*SENS/(2097152l)-OFF)/(32768l);
+	// Temp calculation
+	dT = D2_temp-uint32_t(C[5])*256L;
+	TEMP = 2000L+int64_t(dT)*C[6]/8388608LL;
+	
+	//temp-compensated pressure calculation
+	if ( _model == MS5837_02BA ) { //different calculations for different sensor models
+		OFF = int64_t(C[2])*131072L+(int64_t(C[4])*dT)/64L;
+		SENS = int64_t(C[1])*65536L+(int64_t(C[3])*dT)/128L;
+		P = (D1_pres*SENS/(2097152L)-OFF)/(32768L);
 	} else {
-		SENS = int64_t(C[1])*32768l+(int64_t(C[3])*dT)/256l;
-		OFF = int64_t(C[2])*65536l+(int64_t(C[4])*dT)/128l;
-		P = (D1_pres*SENS/(2097152l)-OFF)/(8192l);
+		OFF = int64_t(C[2])*65536L+(int64_t(C[4])*dT)/128L;
+		SENS = int64_t(C[1])*32768L+(int64_t(C[3])*dT)/256L;
+		P = (D1_pres*SENS/(2097152L)-OFF)/(8192L);
 	}
-
-	// Temp conversion
-	TEMP = 2000l+int64_t(dT)*C[6]/8388608LL;
 
 	//Second order compensation
 	if ( _model == MS5837_02BA ) {
@@ -196,8 +196,8 @@ void MS5837::calculate() {
 			OFFi = (3*(TEMP-2000)*(TEMP-2000))/2;
 			SENSi = (5*(TEMP-2000)*(TEMP-2000))/8;
 			if((TEMP/100)<-15){    //Very low temp
-				OFFi = OFFi+7*(TEMP+1500l)*(TEMP+1500l);
-				SENSi = SENSi+4*(TEMP+1500l)*(TEMP+1500l);
+				OFFi = OFFi+7*(TEMP+1500L)*(TEMP+1500L);
+				SENSi = SENSi+4*(TEMP+1500L)*(TEMP+1500L);
 			}
 		}
 		else if((TEMP/100)>=20){    //High temp
@@ -213,9 +213,9 @@ void MS5837::calculate() {
 	TEMP = (TEMP-Ti);
 
 	if ( _model == MS5837_02BA ) {
-		P = (((D1_pres*SENS2)/2097152l-OFF2)/32768l);
+		P = (((D1_pres*SENS2)/2097152L-OFF2)/32768L);
 	} else {
-		P = (((D1_pres*SENS2)/2097152l-OFF2)/8192l);
+		P = (((D1_pres*SENS2)/2097152L-OFF2)/8192L);
 	}
 }
 
