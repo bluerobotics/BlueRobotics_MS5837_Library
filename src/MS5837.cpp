@@ -96,45 +96,57 @@ void MS5837::setFluidDensity(float density) {
 }
 
 void MS5837::read() {
+	static uint32_t pressTimer = 0;
+	static uint32_t tempTimer  = 0;
+	
 	//Check that _i2cPort is not NULL (i.e. has the user forgoten to call .init or .begin?)
 	if (_i2cPort == NULL)
 	{
 		return;
 	}
+	
+	if(millis() - tempTimer >= 20) {
+		//get requested D2 numbers
+		_i2cPort->beginTransmission(MS5837_ADDR);
+		_i2cPort->write(MS5837_ADC_READ);
+		_i2cPort->endTransmission();
 
-	// Request D1 conversion
-	_i2cPort->beginTransmission(MS5837_ADDR);
-	_i2cPort->write(MS5837_CONVERT_D1_8192);
-	_i2cPort->endTransmission();
+		_i2cPort->requestFrom(MS5837_ADDR,3);
+		D2_temp = 0;
+		D2_temp = _i2cPort->read();
+		D2_temp = (D2_temp << 8) | _i2cPort->read();
+		D2_temp = (D2_temp << 8) | _i2cPort->read();
 
-	delay(20); // Max conversion time per datasheet
+		// Request D1 conversion
+		_i2cPort->beginTransmission(MS5837_ADDR);
+		_i2cPort->write(MS5837_CONVERT_D1_8192);
+		_i2cPort->endTransmission();
+		
+		pressTimer = millis();
+	}
 
-	_i2cPort->beginTransmission(MS5837_ADDR);
-	_i2cPort->write(MS5837_ADC_READ);
-	_i2cPort->endTransmission();
+	//delay(20); // Max conversion time per datasheet
+	if(millis - pressTimer >= 20) {
+		//get requested D1 numbers
+		_i2cPort->beginTransmission(MS5837_ADDR);
+		_i2cPort->write(MS5837_ADC_READ);
+		_i2cPort->endTransmission();
 
-	_i2cPort->requestFrom(MS5837_ADDR,3);
-	D1_pres = 0;
-	D1_pres = _i2cPort->read();
-	D1_pres = (D1_pres << 8) | _i2cPort->read();
-	D1_pres = (D1_pres << 8) | _i2cPort->read();
+		_i2cPort->requestFrom(MS5837_ADDR,3);
+		D1_pres = 0;
+		D1_pres = _i2cPort->read();
+		D1_pres = (D1_pres << 8) | _i2cPort->read();
+		D1_pres = (D1_pres << 8) | _i2cPort->read();
 
-	// Request D2 conversion
-	_i2cPort->beginTransmission(MS5837_ADDR);
-	_i2cPort->write(MS5837_CONVERT_D2_8192);
-	_i2cPort->endTransmission();
+		// Request D2 conversion
+		_i2cPort->beginTransmission(MS5837_ADDR);
+		_i2cPort->write(MS5837_CONVERT_D2_8192);
+		_i2cPort->endTransmission();
+		
+		tempTimer = millis();
+	}
 
-	delay(20); // Max conversion time per datasheet
-
-	_i2cPort->beginTransmission(MS5837_ADDR);
-	_i2cPort->write(MS5837_ADC_READ);
-	_i2cPort->endTransmission();
-
-	_i2cPort->requestFrom(MS5837_ADDR,3);
-	D2_temp = 0;
-	D2_temp = _i2cPort->read();
-	D2_temp = (D2_temp << 8) | _i2cPort->read();
-	D2_temp = (D2_temp << 8) | _i2cPort->read();
+	//delay(20); // Max conversion time per datasheet
 
 	calculate();
 }
