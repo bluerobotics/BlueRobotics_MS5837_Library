@@ -6,7 +6,7 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-MS5837	KEYWORD1
+LANDSHARKS_MS5837	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

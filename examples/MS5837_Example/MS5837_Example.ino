@@ -37,7 +37,7 @@ THE SOFTWARE.
 #include <Wire.h>
 #include "MS5837.h"
 
-MS5837 sensor;
+LANDSHARKS_MS5837 sensor;
 
 void setup() {
 

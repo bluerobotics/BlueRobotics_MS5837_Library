@@ -40,7 +40,7 @@ THE SOFTWARE.
 #include "Arduino.h"
 #include <Wire.h>
 
-class MS5837 {
+class LANDSHARKS_MS5837 {
 public:
 	static const float Pa;
 	static const float bar;
@@ -66,8 +66,8 @@ public:
 	 */
 	void setFluidDensity(float density);
 
-	/** The read from I2C takes up to 40 ms, so use sparingly is possible.
-	 */
+	bool isConnectionGood();
+	 
 	void read();
 
 	/** Pressure returned in mbar or mbar*conversion rate.
@@ -97,6 +97,8 @@ private:
 	int32_t TEMP;
 	int32_t P;
 	uint8_t _model;
+	
+	bool connectionGood;
 
 	float fluidDensity;
 
