@@ -16,9 +16,10 @@ const uint8_t MS5837::MS5837_30BA = 0;
 const uint8_t MS5837::MS5837_02BA = 1;
 const uint8_t MS5837::MS5837_UNRECOGNISED = 255;
 
-const uint8_t MS5837_02BA01 = 0x00; // Sensor version: From MS5837_02BA datasheet Version PROM Word 0
-const uint8_t MS5837_02BA21 = 0x15; // Sensor version: From MS5837_02BA datasheet Version PROM Word 0
-const uint8_t MS5837_30BA26 = 0x1A; // Sensor version: From MS5837_30BA datasheet Version PROM Word 0
+// context: https://github.com/ArduPilot/ardupilot/pull/29122#issuecomment-2877269114
+const uint16_t MS5837_02BA_MAX_SENSITIVITY = 49000;
+const uint16_t MS5837_02BA_30BA_SEPARATION = 37000;
+const uint16_t MS5837_30BA_MIN_SENSITIVITY = 26000;
 
 MS5837::MS5837() {
 	fluidDensity = 1029;
@@ -57,25 +58,24 @@ bool MS5837::init(TwoWire &wirePort) {
 		return false; // CRC fail
 	}
 
-	uint8_t version = (C[0] >> 5) & 0x7F; // Extract the sensor version from PROM Word 0
-
-	// Set _model according to the sensor version
-	if (version == MS5837_02BA01)
-	{
-		_model = MS5837_02BA;
-	}
-	else if (version == MS5837_02BA21)
-	{
-		_model = MS5837_02BA;
-	}
-	else if (version == MS5837_30BA26)
-	{
-		_model = MS5837_30BA;
-	}
-	else
+	// PROM Word 1 represents the sensor's pressure sensitivity calibration
+	// Set _model according to the experimental pressure sensitivity thresholds
+	if (C[1] < MS5837_30BA_MIN_SENSITIVITY || C[1] > MS5837_02BA_MAX_SENSITIVITY)
 	{
 		_model = MS5837_UNRECOGNISED;
 	}
+	else if (C[1] > MS5837_02BA_30BA_SEPARATION)
+	{
+		_model = MS5837_02BA;
+	}
+	else
+	{
+		_model = MS5837_30BA;
+	}
+
+	// TODO: extract and store/report sensor package type from bits 11-5 of PROM Word 0,
+	// per https://github.com/ArduPilot/ardupilot/pull/29122#pullrequestreview-2837597764
+
 	// The sensor has passed the CRC check, so we should return true even if
 	// the sensor version is unrecognised.
 	// (The MS5637 has the same address as the MS5837 and will also pass the CRC check)
